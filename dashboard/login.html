@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedAgent Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <h2>MedAgent <span class="tag" style="background:#3b82f6;color:white;padding:2px 8px;border-radius:12px;font-size:0.8rem;">Secure</span></h2>
+        <p class="login-subtitle">Please login to access the dashboard</p>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="designation">Designation</label>
+                <select id="designation" required>
+                    <option value="Receptionist">Receptionist</option>
+                    <option value="Ward Staff">Ward Staff</option>
+                    <option value="Ward Attender">Ward Attender</option>
+                    <option value="Doctor">Doctor</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter username">
+                <div class="error-msg" id="usernameError">This field is required</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter password">
+                <div class="error-msg" id="passwordError">This field is required</div>
+            </div>
+            
+            <div class="error-msg" id="formError" style="text-align:center; margin-bottom:1rem; display:none;">Invalid user ID or password</div>
+            
+            <button type="submit" class="submit-btn" style="margin-top:0.5rem;">Login</button>
+        </form>
+        
+        <div class="forgot-password">
+            <a href="#" id="forgotBtn">Forgot Password?</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('forgotBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            prompt("Enter your email address to receive password reset instructions:");
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            const designation = document.getElementById('designation').value;
+            
+            let hasError = false;
+            
+            if (!user) {
+                document.getElementById('usernameError').style.display = 'block';
+                hasError = true;
+            } else {
+                document.getElementById('usernameError').style.display = 'none';
+            }
+            
+            if (!pass) {
+                document.getElementById('passwordError').style.display = 'block';
+                hasError = true;
+            } else {
+                document.getElementById('passwordError').style.display = 'none';
+            }
+            
+            if (hasError) return;
+            
+            try {
+                const res = await fetch("http://127.0.0.1:5000/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username: user, password: pass })
+                });
+                
+                const data = await res.json();
+                
+                if (data.status === "success") {
+                    localStorage.setItem("isLoggedIn", "true");
+                    localStorage.setItem("userRole", designation);
+                    window.location.href = "index.html";
+                } else {
+                    const formErr = document.getElementById('formError');
+                    formErr.innerText = data.message || "Invalid user ID or password";
+                    formErr.style.display = 'block';
+                }
+            } catch (err) {
+                console.error(err);
+                const formErr = document.getElementById('formError');
+                formErr.innerText = "Error connecting to server";
+                formErr.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
