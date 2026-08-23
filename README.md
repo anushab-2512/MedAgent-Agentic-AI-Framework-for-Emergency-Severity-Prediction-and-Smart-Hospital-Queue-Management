@@ -96,12 +96,36 @@ pip install -r requirements.txt
 
 ### Run the Application
 
+#### 1. Start the Backend
+
+Open a terminal in the project root:
+
 ```bash
-python app.py
+python api/app.py
 ```
 
----
+The Flask backend will run on:
 
+`http://127.0.0.1:5000`
+
+#### 2. Start the Frontend
+
+Open a **new terminal**:
+
+```bash
+cd dashboard
+python -m http.server 5500
+```
+
+The frontend will run on:
+
+`http://127.0.0.1:5500`
+
+#### 3. Access the Application
+
+Open the following URL in your browser:
+
+`http://127.0.0.1:5500`
 ## 📊 Results
 
 - Improved emergency severity prediction.
